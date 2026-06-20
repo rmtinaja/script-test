@@ -11,7 +11,7 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    environment: production   # same scope the real deploy uses
+    environment: staging   # same scope the real deploy uses
     steps:
       - name: Probe
         env:
