@@ -1,0 +1,51 @@
+name: Check Secrets & Variables
+
+# Diagnostic only — prints which secrets/variables resolve.
+# Variables print their real values; secret VALUES are masked by GitHub,
+# so they show as SET (length N) or EMPTY. Delete this file once verified.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    environment: production   # same scope the real deploy uses
+    steps:
+      - name: Probe
+        env:
+          # secrets must be mapped to env vars to be length-checked (values stay masked)
+          S_APP_URL: ${{ secrets.APP_URL }}
+          S_DVC_DB_PASSWORD: ${{ secrets.DVC_DB_PASSWORD }}
+          S_PAT: ${{ secrets.PAT }}
+          S_PUBLIC_SSH_KEY: ${{ secrets.PUBLIC_SSH_KEY }}
+          S_SAS_DB_HOST: ${{ secrets.SAS_DB_HOST }}
+          S_SAS_DB_PORT: ${{ secrets.SAS_DB_PORT }}
+          S_SAS_DB_USERNAME: ${{ secrets.SAS_DB_USERNAME }}
+          S_SAS_DB_PASSWORD: ${{ secrets.SAS_DB_PASSWORD }}
+        run: |
+          echo "===================== VARIABLES (vars.* — real values) ====================="
+          echo "APP_HOST            = ${{ vars.APP_HOST }}"
+          echo "APP_PORT            = ${{ vars.APP_PORT }}"
+          echo "APP_SSH_USER        = ${{ vars.APP_SSH_USER }}"
+          echo "TEST_APP_SSH_USER   = ${{ vars.TEST_APP_SSH_USER }}"
+          echo "SAS_DB_HOST         = ${{ vars.SAS_DB_HOST }}"
+          echo "SAS_DB_PORT         = ${{ vars.SAS_DB_PORT }}"
+          echo "SAS_DB_USERNAME     = ${{ vars.SAS_DB_USERNAME }}"
+          echo "SAS_DB_PASSWORD     = ${{ vars.SAS_DB_PASSWORD }}   # NOTE: a password as a Variable prints in plaintext"
+          echo "SAS_DB_SAERPRP_NAME = ${{ vars.SAS_DB_SAERPRP_NAME }}"
+          echo "SAS_DB_SAERPP4_NAME = ${{ vars.SAS_DB_SAERPP4_NAME }}"
+          echo "TAPS_DB_NAME        = ${{ vars.TAPS_DB_NAME }}"
+
+          echo ""
+          echo "===================== SECRETS (secrets.* — value masked) ====================="
+          probe () { if [ -n "$2" ]; then echo "$1 = SET (length ${#2})"; else echo "$1 = (EMPTY / not found)"; fi; }
+          probe APP_URL          "$S_APP_URL"
+          probe DVC_DB_PASSWORD  "$S_DVC_DB_PASSWORD"
+          probe PAT              "$S_PAT"
+          probe PUBLIC_SSH_KEY   "$S_PUBLIC_SSH_KEY"
+          probe SAS_DB_HOST      "$S_SAS_DB_HOST"
+          probe SAS_DB_PORT      "$S_SAS_DB_PORT"
+          probe SAS_DB_USERNAME  "$S_SAS_DB_USERNAME"
+          probe SAS_DB_PASSWORD  "$S_SAS_DB_PASSWORD"
