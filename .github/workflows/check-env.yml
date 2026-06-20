@@ -11,41 +11,32 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    environment: staging   # same scope the real deploy uses
+    environment: staging   # must match the environment where you stored these
     steps:
       - name: Probe
         env:
           # secrets must be mapped to env vars to be length-checked (values stay masked)
-          S_APP_URL: ${{ secrets.APP_URL }}
-          S_DVC_DB_PASSWORD: ${{ secrets.DVC_DB_PASSWORD }}
           S_PAT: ${{ secrets.PAT }}
-          S_PUBLIC_SSH_KEY: ${{ secrets.PUBLIC_SSH_KEY }}
-          S_SAS_DB_HOST: ${{ secrets.SAS_DB_HOST }}
-          S_SAS_DB_PORT: ${{ secrets.SAS_DB_PORT }}
-          S_SAS_DB_USERNAME: ${{ secrets.SAS_DB_USERNAME }}
-          S_SAS_DB_PASSWORD: ${{ secrets.SAS_DB_PASSWORD }}
+          S_SSH_KEY: ${{ secrets.SSH_KEY }}
+          S_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          S_DB2_PASSWORD: ${{ secrets.DB2_PASSWORD }}
         run: |
           echo "===================== VARIABLES (vars.* — real values) ====================="
-          echo "APP_HOST            = ${{ vars.APP_HOST }}"
-          echo "APP_PORT            = ${{ vars.APP_PORT }}"
-          echo "APP_SSH_USER        = ${{ vars.APP_SSH_USER }}"
-          echo "TEST_APP_SSH_USER   = ${{ vars.TEST_APP_SSH_USER }}"
-          echo "SAS_DB_HOST         = ${{ vars.SAS_DB_HOST }}"
-          echo "SAS_DB_PORT         = ${{ vars.SAS_DB_PORT }}"
-          echo "SAS_DB_USERNAME     = ${{ vars.SAS_DB_USERNAME }}"
-          echo "SAS_DB_PASSWORD     = ${{ vars.SAS_DB_PASSWORD }}   # NOTE: a password as a Variable prints in plaintext"
-          echo "SAS_DB_SAERPRP_NAME = ${{ vars.SAS_DB_SAERPRP_NAME }}"
-          echo "SAS_DB_SAERPP4_NAME = ${{ vars.SAS_DB_SAERPP4_NAME }}"
-          echo "TAPS_DB_NAME        = ${{ vars.TAPS_DB_NAME }}"
+          echo "APP_HOST     = ${{ vars.APP_HOST }}"
+          echo "APP_PORT     = ${{ vars.APP_PORT }}"
+          echo "APP_SSH_USER = ${{ vars.APP_SSH_USER }}"
+          echo "APP_URL      = ${{ vars.APP_URL }}"
+          echo "DB_DATABASE  = ${{ vars.DB_DATABASE }}"
+          echo "DB_USERNAME  = ${{ vars.DB_USERNAME }}"
+          echo "DB2_HOST     = ${{ vars.DB2_HOST }}"
+          echo "DB2_PORT     = ${{ vars.DB2_PORT }}"
+          echo "DB2_DATABASE = ${{ vars.DB2_DATABASE }}"
+          echo "DB2_USERNAME = ${{ vars.DB2_USERNAME }}"
 
           echo ""
           echo "===================== SECRETS (secrets.* — value masked) ====================="
           probe () { if [ -n "$2" ]; then echo "$1 = SET (length ${#2})"; else echo "$1 = (EMPTY / not found)"; fi; }
-          probe APP_URL          "$S_APP_URL"
-          probe DVC_DB_PASSWORD  "$S_DVC_DB_PASSWORD"
-          probe PAT              "$S_PAT"
-          probe PUBLIC_SSH_KEY   "$S_PUBLIC_SSH_KEY"
-          probe SAS_DB_HOST      "$S_SAS_DB_HOST"
-          probe SAS_DB_PORT      "$S_SAS_DB_PORT"
-          probe SAS_DB_USERNAME  "$S_SAS_DB_USERNAME"
-          probe SAS_DB_PASSWORD  "$S_SAS_DB_PASSWORD"
+          probe PAT          "$S_PAT"
+          probe SSH_KEY      "$S_SSH_KEY"
+          probe DB_PASSWORD  "$S_DB_PASSWORD"
+          probe DB2_PASSWORD "$S_DB2_PASSWORD"
