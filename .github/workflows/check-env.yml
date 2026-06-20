@@ -11,7 +11,7 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
-    environment: staging   # must match the environment where you stored these
+    environment: PAT   # must match the environment where you stored these
     steps:
       - name: Probe
         env:
